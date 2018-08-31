@@ -8,7 +8,6 @@ index eba2394..b380901 100644
  # core: '8.x'
 +dependencies:
 +  - drupal:serialization
-\ No newline at end of file
 diff --git a/simplify_menu.services.yml b/simplify_menu.services.yml
 index f721fa2..316f268 100644
 --- a/simplify_menu.services.yml
