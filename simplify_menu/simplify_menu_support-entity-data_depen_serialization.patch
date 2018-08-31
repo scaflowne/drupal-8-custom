@@ -8,7 +8,6 @@ index 4fa0f9f..dee296d 100644
  project: 'simplify_menu'
 -datestamp: 1509116288
 \ No newline at end of file
-+datestamp: 1509116288
 +
 +dependencies:
 +  - drupal:serialization
