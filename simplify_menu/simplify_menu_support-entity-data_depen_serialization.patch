@@ -2,11 +2,7 @@ diff --git a/simplify_menu.info.yml b/simplify_menu.info.yml
 index 4fa0f9f..dee296d 100644
 --- a/simplify_menu.info.yml
 +++ b/simplify_menu.info.yml
-@@ -7,4 +7,7 @@ type: module
- version: '8.x-2.0'
- core: '8.x'
- project: 'simplify_menu'
--datestamp: 1509116288
+@@ -8,4 +8,7 @@ type: module
 \ No newline at end of file
 +
 +dependencies:
