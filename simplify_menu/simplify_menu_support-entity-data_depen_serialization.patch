@@ -1,17 +1,13 @@
 diff --git a/simplify_menu.info.yml b/simplify_menu.info.yml
-index eba2394..dee296d 100644
+index 4fa0f9f..dee296d 100644
 --- a/simplify_menu.info.yml
 +++ b/simplify_menu.info.yml
-@@ -1,4 +1,13 @@
- name: Simplify Menu
- description: 'Adds a TwigExtension that grants access to Drupal''s menu render array so it can be used within a twig template.'
- type: module
-+# core: '8.x'
-+
-+# Information added by Drupal.org packaging script on 2017-10-27
-+version: '8.x-2.0'
+@@ -7,4 +7,7 @@ type: module
+ version: '8.x-2.0'
  core: '8.x'
-+project: 'simplify_menu'
+ project: 'simplify_menu'
+-datestamp: 1509116288
+\ No newline at end of file
 +datestamp: 1509116288
 +
 +dependencies:
