@@ -24,7 +24,7 @@ index f721fa2..316f268 100644
    simplify_menu.menu_items_twig_extension:
      class: Drupal\simplify_menu\TwigExtension\MenuItemsTwigExtension
 diff --git a/src/MenuItems.php b/src/MenuItems.php
-index 4d9d643..9705262 100644
+index 4d9d643..f7b083d 100644
 --- a/src/MenuItems.php
 +++ b/src/MenuItems.php
 @@ -4,6 +4,8 @@ namespace Drupal\simplify_menu;
@@ -41,9 +41,9 @@ index 4d9d643..9705262 100644
     * @param MenuLinkTree $menu_link_tree
     *   The MenuLinkTree service.
 +   * @param EntityRepository $entity_repository
-+   *   The EntityRepository service.
++   *  The EntityRepository service.
 +   * @param Serializer $serializer
-+   *   The Serializer service.
++   *  The Serializer service.
     */
 -  public function __construct(MenuLinkTree $menu_link_tree) {
 +  public function __construct(MenuLinkTree $menu_link_tree, EntityRepositoryInterface $entity_repository, Serializer $serializer) {
@@ -78,10 +78,11 @@ index 4d9d643..9705262 100644
        ];
  
        $current_path = \Drupal::request()->getRequestUri();
-@@ -63,12 +74,22 @@ class MenuItems {
+@@ -63,12 +74,23 @@ class MenuItems {
        }
  
        $plugin_id = $item->link->getPluginId();
++
 +
 +      // If we have an instance of MenuLinkContent, load entity.
 +      if ($loadEntity && $item->link instanceof \Drupal\menu_link_content\Plugin\Menu\MenuLinkContent) {
@@ -102,7 +103,7 @@ index 4d9d643..9705262 100644
        }
        $result[] = $simplifiedLink;
      }
-@@ -84,7 +105,7 @@ class MenuItems {
+@@ -84,7 +106,7 @@ class MenuItems {
     * @return array
     *   Render array of menu items.
     */
@@ -111,11 +112,7 @@ index 4d9d643..9705262 100644
      $this->setActiveMenuTree($menuId);
  
      $parameters = new MenuTreeParameters();
-@@ -95,10 +116,11 @@ class MenuItems {
-     ];
- 
-     $headerTreeLoad = $this->menuLinkTree->load($menuId, $parameters);
-+
+@@ -98,7 +120,7 @@ class MenuItems {
      $headerTransform = $this->menuLinkTree->transform($headerTreeLoad, $manipulators);
  
      return [
