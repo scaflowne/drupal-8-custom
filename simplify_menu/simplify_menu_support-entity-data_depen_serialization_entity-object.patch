@@ -30,7 +30,6 @@ index 80542e8..7bf3748 100644
 @@ -5,6 +5,8 @@ namespace Drupal\simplify_menu;
  use Drupal\Core\Menu\MenuLinkTree;
  use Drupal\Core\Menu\MenuTreeParameters;
- use Drupal\Core\Access\AccessResultInterface;
 +use Drupal\Core\Entity\EntityRepositoryInterface;
 +use Symfony\Component\Serializer\Serializer;
  
