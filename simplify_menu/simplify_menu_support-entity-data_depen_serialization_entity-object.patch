@@ -90,6 +90,8 @@ index 4d9d643..9705262 100644
 +        $entityJson = $this->serializer->serialize($entity, 'json');
 +        // Decode JSON to easy access.
 +        $simplifiedLink['entity'] = json_decode($entityJson);
++        // Add the Entity Object
++        $simplifiedLink['entityObject'] = $entity;
 +      }
 +
        if (isset($this->activeMenuTree[$plugin_id]) && $this->activeMenuTree[$plugin_id] == TRUE) {
