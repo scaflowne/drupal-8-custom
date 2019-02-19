@@ -1,11 +1,11 @@
 diff --git a/simplify_menu.info.yml b/simplify_menu.info.yml
-index fceddd6..dee296d 100644
+index eba2394..b04fb07 100644
 --- a/simplify_menu.info.yml
 +++ b/simplify_menu.info.yml
-@@ -8,3 +8,6 @@ version: '8.x-2.0'
+@@ -2,3 +2,6 @@ name: Simplify Menu
+ description: 'Adds a TwigExtension that grants access to Drupal''s menu render array so it can be used within a twig template.'
+ type: module
  core: '8.x'
- project: 'simplify_menu'
- datestamp: 1550599507
 +
 +dependencies:
 +  - drupal:serialization
@@ -24,26 +24,26 @@ index f721fa2..316f268 100644
    simplify_menu.menu_items_twig_extension:
      class: Drupal\simplify_menu\TwigExtension\MenuItemsTwigExtension
 diff --git a/src/MenuItems.php b/src/MenuItems.php
-index 4d9d643..9705262 100644
+index 80542e8..7bf3748 100644
 --- a/src/MenuItems.php
 +++ b/src/MenuItems.php
-@@ -4,6 +4,8 @@ namespace Drupal\simplify_menu;
- 
+@@ -5,6 +5,8 @@ namespace Drupal\simplify_menu;
  use Drupal\Core\Menu\MenuLinkTree;
  use Drupal\Core\Menu\MenuTreeParameters;
+ use Drupal\Core\Access\AccessResultInterface;
 +use Drupal\Core\Entity\EntityRepositoryInterface;
 +use Symfony\Component\Serializer\Serializer;
  
  /**
   * Class MenuItems.
-@@ -31,9 +33,15 @@ class MenuItems {
+@@ -32,9 +34,15 @@ class MenuItems {
     *
     * @param MenuLinkTree $menu_link_tree
     *   The MenuLinkTree service.
 +   * @param EntityRepository $entity_repository
-+   *   The EntityRepository service.
++   *  The EntityRepository service.
 +   * @param Serializer $serializer
-+   *   The Serializer service.
++   *  The Serializer service.
     */
 -  public function __construct(MenuLinkTree $menu_link_tree) {
 +  public function __construct(MenuLinkTree $menu_link_tree, EntityRepositoryInterface $entity_repository, Serializer $serializer) {
@@ -53,14 +53,12 @@ index 4d9d643..9705262 100644
    }
  
    /**
-@@ -41,13 +49,15 @@ class MenuItems {
-    *
-    * @param array $links
+@@ -44,11 +52,13 @@ class MenuItems {
     *   The array of menu tree links.
-+   * @param bool $loadEntity
-+   *   Flag to load entity.
     * @param string $submenuKey
     *   The key for the submenu to simplify.
++   * @param bool $loadEntity
++   *   Flag to load entity.
     *
     * @return array
     *   The simplified menu tree array.
@@ -69,8 +67,8 @@ index 4d9d643..9705262 100644
 +  protected function simplifyLinks(array $links, $loadEntity = false, $submenuKey = 'submenu') {
      $result = [];
      foreach ($links as $item) {
-       $simplifiedLink = [
-@@ -55,6 +65,7 @@ class MenuItems {
+       // Per DefaultMenuLinkTreeManipulators::checkAccess(), which we run in
+@@ -78,6 +88,7 @@ class MenuItems {
          'url' => $item->link->getUrlObject()->toString(),
          'active_trail' => FALSE,
          'active' => FALSE,
@@ -78,7 +76,7 @@ index 4d9d643..9705262 100644
        ];
  
        $current_path = \Drupal::request()->getRequestUri();
-@@ -63,12 +74,22 @@ class MenuItems {
+@@ -86,12 +97,24 @@ class MenuItems {
        }
  
        $plugin_id = $item->link->getPluginId();
@@ -104,7 +102,7 @@ index 4d9d643..9705262 100644
        }
        $result[] = $simplifiedLink;
      }
-@@ -84,7 +105,7 @@ class MenuItems {
+@@ -107,7 +130,7 @@ class MenuItems {
     * @return array
     *   Render array of menu items.
     */
@@ -113,11 +111,7 @@ index 4d9d643..9705262 100644
      $this->setActiveMenuTree($menuId);
  
      $parameters = new MenuTreeParameters();
-@@ -95,10 +116,11 @@ class MenuItems {
-     ];
- 
-     $headerTreeLoad = $this->menuLinkTree->load($menuId, $parameters);
-+
+@@ -121,7 +144,7 @@ class MenuItems {
      $headerTransform = $this->menuLinkTree->transform($headerTreeLoad, $manipulators);
  
      return [
