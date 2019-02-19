@@ -5,7 +5,7 @@ index fceddd6..dee296d 100644
 @@ -8,3 +8,6 @@ version: '8.x-2.0'
  core: '8.x'
  project: 'simplify_menu'
- datestamp: 1509116288
+ datestamp: 1550599507
 +
 +dependencies:
 +  - drupal:serialization
