@@ -1,7 +1,7 @@
-diff --git a/simplify_menu.info.yml b/simplify_menu.info.yml
+diff --git a/simplify_menu/simplify_menu/simplify_menu.info.yml b/simplify_menu/simplify_menu/simplify_menu.info.yml
 index fceddd6..dee296d 100644
---- a/simplify_menu.info.yml
-+++ b/simplify_menu.info.yml
+--- a/simplify_menu/simplify_menu/simplify_menu.info.yml
++++ b/simplify_menu/simplify_menu/simplify_menu.info.yml
 @@ -8,3 +8,6 @@ version: '8.x-2.0'
  core: '8.x'
  project: 'simplify_menu'
@@ -10,10 +10,10 @@ index fceddd6..dee296d 100644
 +dependencies:
 +  - drupal:serialization
 \ No newline at end of file
-diff --git a/simplify_menu.services.yml b/simplify_menu.services.yml
+diff --git a/simplify_menu/simplify_menu/simplify_menu.services.yml b/simplify_menu/simplify_menu/simplify_menu.services.yml
 index f721fa2..316f268 100644
---- a/simplify_menu.services.yml
-+++ b/simplify_menu.services.yml
+--- a/simplify_menu/simplify_menu/simplify_menu.services.yml
++++ b/simplify_menu/simplify_menu/simplify_menu.services.yml
 @@ -1,7 +1,7 @@
  services:
    simplify_menu.menu_items:
@@ -23,11 +23,12 @@ index f721fa2..316f268 100644
  
    simplify_menu.menu_items_twig_extension:
      class: Drupal\simplify_menu\TwigExtension\MenuItemsTwigExtension
-diff --git a/src/MenuItems.php b/src/MenuItems.php
-index 80542e8..7bf3748 100644
---- a/src/MenuItems.php
-+++ b/src/MenuItems.php
-@@ -5,6 +5,8 @@ namespace Drupal\simplify_menu;
+diff --git a/simplify_menu/simplify_menu/src/MenuItems.php b/simplify_menu/simplify_menu/src/MenuItems.php
+index 4d9d643..3969817 100644
+--- a/simplify_menu/simplify_menu/src/MenuItems.php
++++ b/simplify_menu/simplify_menu/src/MenuItems.php
+@@ -4,6 +4,8 @@ namespace Drupal\simplify_menu;
+ 
  use Drupal\Core\Menu\MenuLinkTree;
  use Drupal\Core\Menu\MenuTreeParameters;
 +use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -35,14 +36,14 @@ index 80542e8..7bf3748 100644
  
  /**
   * Class MenuItems.
-@@ -32,9 +34,15 @@ class MenuItems {
+@@ -31,9 +33,15 @@ class MenuItems {
     *
     * @param MenuLinkTree $menu_link_tree
     *   The MenuLinkTree service.
 +   * @param EntityRepository $entity_repository
-+   *  The EntityRepository service.
++   *   The EntityRepository service.
 +   * @param Serializer $serializer
-+   *  The Serializer service.
++   *   The Serializer service.
     */
 -  public function __construct(MenuLinkTree $menu_link_tree) {
 +  public function __construct(MenuLinkTree $menu_link_tree, EntityRepositoryInterface $entity_repository, Serializer $serializer) {
@@ -52,12 +53,14 @@ index 80542e8..7bf3748 100644
    }
  
    /**
-@@ -44,11 +52,13 @@ class MenuItems {
+@@ -41,13 +49,15 @@ class MenuItems {
+    *
+    * @param array $links
     *   The array of menu tree links.
-    * @param string $submenuKey
-    *   The key for the submenu to simplify.
 +   * @param bool $loadEntity
 +   *   Flag to load entity.
+    * @param string $submenuKey
+    *   The key for the submenu to simplify.
     *
     * @return array
     *   The simplified menu tree array.
@@ -66,8 +69,8 @@ index 80542e8..7bf3748 100644
 +  protected function simplifyLinks(array $links, $loadEntity = false, $submenuKey = 'submenu') {
      $result = [];
      foreach ($links as $item) {
-       // Per DefaultMenuLinkTreeManipulators::checkAccess(), which we run in
-@@ -78,6 +88,7 @@ class MenuItems {
+       $simplifiedLink = [
+@@ -55,6 +65,7 @@ class MenuItems {
          'url' => $item->link->getUrlObject()->toString(),
          'active_trail' => FALSE,
          'active' => FALSE,
@@ -75,7 +78,7 @@ index 80542e8..7bf3748 100644
        ];
  
        $current_path = \Drupal::request()->getRequestUri();
-@@ -86,12 +97,24 @@ class MenuItems {
+@@ -63,12 +74,24 @@ class MenuItems {
        }
  
        $plugin_id = $item->link->getPluginId();
@@ -101,7 +104,7 @@ index 80542e8..7bf3748 100644
        }
        $result[] = $simplifiedLink;
      }
-@@ -107,7 +130,7 @@ class MenuItems {
+@@ -84,7 +107,7 @@ class MenuItems {
     * @return array
     *   Render array of menu items.
     */
@@ -110,7 +113,7 @@ index 80542e8..7bf3748 100644
      $this->setActiveMenuTree($menuId);
  
      $parameters = new MenuTreeParameters();
-@@ -121,7 +144,7 @@ class MenuItems {
+@@ -98,7 +121,7 @@ class MenuItems {
      $headerTransform = $this->menuLinkTree->transform($headerTreeLoad, $manipulators);
  
      return [
@@ -119,10 +122,10 @@ index 80542e8..7bf3748 100644
      ];
    }
  
-diff --git a/src/TwigExtension/MenuItemsTwigExtension.php b/src/TwigExtension/MenuItemsTwigExtension.php
+diff --git a/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php b/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
 index 7284771..1f805e2 100644
---- a/src/TwigExtension/MenuItemsTwigExtension.php
-+++ b/src/TwigExtension/MenuItemsTwigExtension.php
+--- a/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
++++ b/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
 @@ -34,8 +34,8 @@ class MenuItemsTwigExtension extends \Twig_Extension {
    public function getFunctions() {
      return [
