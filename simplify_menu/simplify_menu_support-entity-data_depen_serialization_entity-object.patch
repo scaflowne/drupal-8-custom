@@ -1,7 +1,7 @@
-diff --git a/simplify_menu/simplify_menu/simplify_menu.info.yml b/simplify_menu/simplify_menu/simplify_menu.info.yml
+diff --git a/simplify_menu.info.yml b/simplify_menu.info.yml
 index fceddd6..dee296d 100644
---- a/simplify_menu/simplify_menu/simplify_menu.info.yml
-+++ b/simplify_menu/simplify_menu/simplify_menu.info.yml
+--- a/simplify_menu.info.yml
++++ b/simplify_menu.info.yml
 @@ -8,3 +8,6 @@ version: '8.x-2.0'
  core: '8.x'
  project: 'simplify_menu'
@@ -10,30 +10,30 @@ index fceddd6..dee296d 100644
 +dependencies:
 +  - drupal:serialization
 \ No newline at end of file
-diff --git a/simplify_menu/simplify_menu/simplify_menu.services.yml b/simplify_menu/simplify_menu/simplify_menu.services.yml
+diff --git a/simplify_menu.services.yml b/simplify_menu.services.yml
 index f721fa2..316f268 100644
---- a/simplify_menu/simplify_menu/simplify_menu.services.yml
-+++ b/simplify_menu/simplify_menu/simplify_menu.services.yml
+--- a/simplify_menu.services.yml
++++ b/simplify_menu.services.yml
 @@ -1,7 +1,7 @@
  services:
    simplify_menu.menu_items:
      class: Drupal\simplify_menu\MenuItems
 -    arguments: ['@menu.link_tree']
 +    arguments: ['@menu.link_tree', '@entity.repository', '@serializer']
- 
+
    simplify_menu.menu_items_twig_extension:
      class: Drupal\simplify_menu\TwigExtension\MenuItemsTwigExtension
-diff --git a/simplify_menu/simplify_menu/src/MenuItems.php b/simplify_menu/simplify_menu/src/MenuItems.php
-index 4d9d643..3969817 100644
---- a/simplify_menu/simplify_menu/src/MenuItems.php
-+++ b/simplify_menu/simplify_menu/src/MenuItems.php
+diff --git a/src/MenuItems.php b/src/MenuItems.php
+index 4d9d643..fca21bb 100644
+--- a/src/MenuItems.php
++++ b/src/MenuItems.php
 @@ -4,6 +4,8 @@ namespace Drupal\simplify_menu;
- 
+
  use Drupal\Core\Menu\MenuLinkTree;
  use Drupal\Core\Menu\MenuTreeParameters;
 +use Drupal\Core\Entity\EntityRepositoryInterface;
 +use Symfony\Component\Serializer\Serializer;
- 
+
  /**
   * Class MenuItems.
 @@ -31,9 +33,15 @@ class MenuItems {
@@ -51,7 +51,7 @@ index 4d9d643..3969817 100644
 +    $this->entityRepository = $entity_repository;
 +    $this->serializer = $serializer;
    }
- 
+
    /**
 @@ -41,13 +49,15 @@ class MenuItems {
     *
@@ -76,11 +76,11 @@ index 4d9d643..3969817 100644
          'active' => FALSE,
 +        'entity' => NULL,
        ];
- 
+
        $current_path = \Drupal::request()->getRequestUri();
 @@ -63,12 +74,24 @@ class MenuItems {
        }
- 
+
        $plugin_id = $item->link->getPluginId();
 +
 +      // If we have an instance of MenuLinkContent, load entity.
@@ -97,7 +97,7 @@ index 4d9d643..3969817 100644
        if (isset($this->activeMenuTree[$plugin_id]) && $this->activeMenuTree[$plugin_id] == TRUE) {
          $simplifiedLink['active_trail'] = TRUE;
        }
- 
+
        if ($item->hasChildren) {
 -        $simplifiedLink[$submenuKey] = $this->simplifyLinks($item->subtree);
 +        $simplifiedLink[$submenuKey] = $this->simplifyLinks($item->subtree, $loadEntity);
@@ -111,21 +111,25 @@ index 4d9d643..3969817 100644
 -  public function getMenuTree($menuId = 'main') {
 +  public function getMenuTree($menuId = 'main', $loadEntity = false) {
      $this->setActiveMenuTree($menuId);
- 
+
      $parameters = new MenuTreeParameters();
-@@ -98,7 +121,7 @@ class MenuItems {
+@@ -95,10 +118,11 @@ class MenuItems {
+     ];
+
+     $headerTreeLoad = $this->menuLinkTree->load($menuId, $parameters);
++
      $headerTransform = $this->menuLinkTree->transform($headerTreeLoad, $manipulators);
- 
+
      return [
 -      'menu_tree' => $this->simplifyLinks($headerTransform),
 +      'menu_tree' => $this->simplifyLinks($headerTransform, $loadEntity),
      ];
    }
- 
-diff --git a/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php b/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
+
+diff --git a/src/TwigExtension/MenuItemsTwigExtension.php b/src/TwigExtension/MenuItemsTwigExtension.php
 index 7284771..1f805e2 100644
---- a/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
-+++ b/simplify_menu/simplify_menu/src/TwigExtension/MenuItemsTwigExtension.php
+--- a/src/TwigExtension/MenuItemsTwigExtension.php
++++ b/src/TwigExtension/MenuItemsTwigExtension.php
 @@ -34,8 +34,8 @@ class MenuItemsTwigExtension extends \Twig_Extension {
    public function getFunctions() {
      return [
