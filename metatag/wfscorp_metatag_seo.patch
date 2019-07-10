@@ -1,5 +1,5 @@
 diff --git a/src/MetatagManager.php b/src/MetatagManager.php
-index 35b375b..617cff9 100644
+index 35b375b..2a215c6 100644
 --- a/src/MetatagManager.php
 +++ b/src/MetatagManager.php
 @@ -287,6 +287,8 @@ class MetatagManager implements MetatagManagerInterface {
@@ -60,7 +60,7 @@ index 35b375b..617cff9 100644
 +                'article_modified_time', 'article_expiration_time', 'book_author', 'book_isbn', 'book_release_date', 'book_tag'
 +              ],
 +              'schema_article' => [
-+                'schema_article_has_part', 'schema_article_aggregate_rating', 'schema_article_review',
++                'schema_article_has_part', 'schema_article_aggregate_rating', 'schema_article_review', 'schema_article_local_address',
 +                'schema_article_image' => ['width', 'height'],
 +                'schema_article_author' => ['logo' => ['width', 'height']],
 +                'schema_article_publisher' => ['logo' => ['width', 'height']],
