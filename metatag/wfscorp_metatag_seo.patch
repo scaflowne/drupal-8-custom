@@ -1,0 +1,175 @@
+diff --git a/src/MetatagManager.php b/src/MetatagManager.php
+index 35b375b..617cff9 100644
+--- a/src/MetatagManager.php
++++ b/src/MetatagManager.php
+@@ -287,6 +287,8 @@ class MetatagManager implements MetatagManagerInterface {
+       }
+     }
+ 
++    $this->removeGroupsTags($element, $token_types);
++
+     return $element;
+   }
+ 
+@@ -585,4 +587,143 @@ class MetatagManager implements MetatagManagerInterface {
+     return ['metatag'];
+   }
+ 
++  /**
++   * @param $element array
++   *
++   * @param $token_types array
++   *
++   */
++  public function removeGroupsTags(&$element, $token_types) {
++
++    if (isset($token_types[1])) {
++      $removeTags = [];
++      switch ($token_types[1]) {
++        case 'standard_content_page':
++            $removeTags = [
++              'advanced' => [
++                'geo_placename', 'geo_position', 'geo_region', 'icbm', 'shortlink', 'news_keywords', 'standout', 'generator',
++                'original_source', 'google', 'referrer', 'rights', 'set_cookie'
++              ],
++              'open_graph' => [
++                'og_determiner', 'og_video', 'og_image_url', 'og_image_secure_url', 'og_video_secure_url', 'og_image_type',
++                'og_video_type', 'og_image_width', 'og_video_width', 'og_image_height', 'og_video_height', 'og_image_alt',
++                'og_updated_time', 'og_latitude', 'og_longitude', 'og_see_also', 'og_street_address', 'og_locality', 'og_region',
++                'og_postal_code', 'og_country_name', 'og_email', 'og_phone_number', 'og_fax_number', 'og_locale', 'og_locale_alternative',
++                'article_author', 'article_publisher', 'article_section', 'article_tag', 'article_published_time', 'article_modified_time',
++                'article_expiration_time', 'book_author', 'book_isbn', 'book_release_date', 'book_tag'
++              ],
++              'schema_web_site' => [
++                'schema_web_site_potential_action',
++                'schema_web_site_publisher' => ['logo' => ['width', 'height']],
++              ],
++            ];
++          break;
++          case 'newsfeed':
++            $removeTags = [
++              'advanced' => [
++                'geo_placename', 'geo_position', 'geo_region', 'icbm', 'shortlink', 'standout', 'generator',
++                'original_source', 'google', 'referrer', 'rights', 'set_cookie'
++              ],
++              'open_graph' => [
++                'og_determiner', 'og_video', 'og_image_url', 'og_image_secure_url', 'og_video_secure_url', 'og_image_type',
++                'og_video_type', 'og_image_width', 'og_video_width', 'og_image_height', 'og_video_height', 'og_image_alt',
++                'og_updated_time', 'og_latitude', 'og_longitude', 'og_see_also', 'og_street_address', 'og_locality', 'og_region',
++                'og_postal_code', 'og_country_name', 'og_email', 'og_phone_number', 'og_fax_number', 'og_locale', 'og_locale_alternative',
++                'article_modified_time', 'article_expiration_time', 'book_author', 'book_isbn', 'book_release_date', 'book_tag'
++              ],
++              'schema_article' => [
++                'schema_article_has_part', 'schema_article_aggregate_rating', 'schema_article_review',
++                'schema_article_image' => ['width', 'height'],
++                'schema_article_author' => ['logo' => ['width', 'height']],
++                'schema_article_publisher' => ['logo' => ['width', 'height']],
++              ],
++            ];
++          break;
++          case 'corporate_bio':
++            $removeTags = [
++              'advanced' => [
++                'geo_placename', 'geo_position', 'geo_region', 'icbm', 'shortlink', 'news_keywords', 'standout', 'generator',
++                'original_source', 'google', 'referrer', 'rights', 'set_cookie'
++              ],
++              'open_graph' => [
++                'og_determiner', 'og_video', 'og_image_url', 'og_image_secure_url', 'og_video_secure_url', 'og_image_type',
++                'og_video_type', 'og_image_width', 'og_video_width', 'og_image_height', 'og_video_height', 'og_image_alt',
++                'og_updated_time', 'og_latitude', 'og_longitude', 'og_see_also', 'og_street_address', 'og_locality', 'og_region',
++                'og_postal_code', 'og_country_name', 'og_email', 'og_phone_number', 'og_fax_number', 'og_locale', 'og_locale_alternative',
++                'article_author', 'article_publisher', 'article_section', 'article_published_time', 'article_modified_time',
++                'article_expiration_time', 'book_author', 'book_isbn', 'book_release_date', 'book_tag'
++              ],
++              'schema_person' => [
++                'schema_person_family_name', 'schema_person_given_name', 'schema_person_additional_name', 'schema_person_alternate_name',
++                'schema_person_birth_date', 'schema_person_gender', 'schema_person_contact_point', 'schema_person_brand',
++                'schema_person_member_of',
++                'schema_person_image' => ['width', 'height'],
++                'schema_person_affiliation' => ['logo'],
++                'schema_person_works_for' => ['logo'],
++              ],
++            ];
++          break;
++          case 'generic_detail':
++            $removeTags = [
++              'advanced' => [
++                'geo_placename', 'geo_position', 'geo_region', 'icbm', 'shortlink', 'standout', 'generator',
++                'original_source', 'google', 'referrer', 'rights', 'set_cookie'
++              ],
++              'open_graph' => [
++                'og_determiner', 'og_video', 'og_image_url', 'og_image_secure_url', 'og_video_secure_url', 'og_image_type',
++                'og_video_type', 'og_image_width', 'og_video_width', 'og_image_height', 'og_video_height', 'og_image_alt',
++                'og_updated_time', 'og_latitude', 'og_longitude', 'og_see_also', 'og_street_address', 'og_locality', 'og_region',
++                'og_postal_code', 'og_country_name', 'og_email', 'og_phone_number', 'og_fax_number', 'og_locale', 'og_locale_alternative',
++                'article_modified_time', 'article_expiration_time', 'book_author', 'book_isbn', 'book_release_date', 'book_tag'
++              ],
++              'schema_article' => [
++                'schema_article_has_part', 'schema_article_aggregate_rating', 'schema_article_review',
++                'schema_article_image' => ['width', 'height'],
++                'schema_article_author' => ['logo' => ['width', 'height']],
++                'schema_article_publisher' => ['logo' => ['width', 'height']],
++              ],
++              'schema_event' => [
++                'schema_event_image' => ['width', 'height'],
++                'schema_event_location' => ['geo'],
++                'schema_event_offers' => [
++                  'availability', 'availabilityStarts', 'availabilityEnds', 'validFrom', 'category', 'eligibleRegion', 'ineligibleRegion'
++                ],
++              ],
++              'schema_web_page' => [
++                'schema_web_page_breadcrumb', 'schema_web_page_has_part',
++                'schema_web_page_author' => ['logo'],
++                'schema_web_page_publisher' => ['logo'],
++              ],
++            ];
++          break;
++      }
++
++      if (!empty($removeTags)) {
++        foreach ($removeTags as $key => $tags) {
++          foreach ($tags as $t => $tag) {
++            if (!is_array($tag)) {
++              if (isset($element[$key][$tag])) {
++                unset($element[$key][$tag]);
++              }
++            } else {
++              foreach ($tag as $k => $fields) {
++                if (is_array($fields)) {
++                  foreach ($fields as $field) {
++                    if (isset($element[$key][$t][$k][$field])) {
++                      unset($element[$key][$t][$k][$field]);
++                    }
++                  }
++                } else {
++                  if (isset($element[$key][$t][$fields])) {
++                    unset($element[$key][$t][$fields]);
++                  }
++                }
++              }
++            }
++          }
++        }
++      }
++    }
++  }
++
+ }
+diff --git a/src/Plugin/Field/FieldWidget/MetatagFirehose.php b/src/Plugin/Field/FieldWidget/MetatagFirehose.php
+index c402730..5c8f8c5 100644
+--- a/src/Plugin/Field/FieldWidget/MetatagFirehose.php
++++ b/src/Plugin/Field/FieldWidget/MetatagFirehose.php
+@@ -86,11 +86,11 @@ class MetatagFirehose extends WidgetBase implements ContainerFactoryPluginInterf
+     $groups = !empty($entity_type_groups[$entity_type]) && !empty($entity_type_groups[$entity_type][$entity_bundle]) ? $entity_type_groups[$entity_type][$entity_bundle] : [];
+     // Limit the form to requested groups, if any.
+     if (!empty($groups)) {
+-      $element = $this->metatagManager->form($values, $element, [$entity_type], $groups);
++      $element = $this->metatagManager->form($values, $element, [$entity_type, $entity_bundle], $groups);
+     }
+     // Otherwise, display all groups.
+     else {
+-      $element = $this->metatagManager->form($values, $element, [$entity_type]);
++      $element = $this->metatagManager->form($values, $element, [$entity_type, $entity_bundle]);
+     }
+ 
+     // Put the form element into the form's "advanced" group.
