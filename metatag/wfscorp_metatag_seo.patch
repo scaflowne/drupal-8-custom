@@ -5,16 +5,16 @@ index 35b375b..f7650ba 100644
 @@ -287,6 +287,8 @@ class MetatagManager implements MetatagManagerInterface {
        }
      }
- 
+
 +    $this->removeGroupsTags($element, $token_types);
 +
      return $element;
    }
- 
+
 @@ -585,4 +587,145 @@ class MetatagManager implements MetatagManagerInterface {
      return ['metatag'];
    }
- 
+
 +  /**
 +   * @param $element array
 +   *
@@ -115,7 +115,7 @@ index 35b375b..f7650ba 100644
 +                'schema_event_image' => ['width', 'height'],
 +                'schema_event_location' => ['geo'],
 +                'schema_event_offers' => [
-+                  'availability', 'availabilityStarts', 'availabilityEnds', 'validFrom', 'category', 'eligibleRegion', 'ineligibleRegion'
++                  'availabilityStarts', 'availabilityEnds', 'category', 'eligibleRegion', 'ineligibleRegion'
 +                ],
 +                'schema_event_performer' => ['logo']
 +              ],
@@ -173,5 +173,5 @@ index c402730..5c8f8c5 100644
 -      $element = $this->metatagManager->form($values, $element, [$entity_type]);
 +      $element = $this->metatagManager->form($values, $element, [$entity_type, $entity_bundle]);
      }
- 
+
      // Put the form element into the form's "advanced" group.
